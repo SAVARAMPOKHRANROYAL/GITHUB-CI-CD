@@ -2,11 +2,11 @@ name: Build .NET Modules in Parallel
 
 on:
   push:
-    branches:
-      - 'main'
-  pull_request:
-    branches:
-      - 'main'
+    tags:
+      - 'v8.*.*'
+  # pull_request:
+  #   branches:
+  #     - 'main'
 
 jobs:
   build:
