@@ -1,31 +1,37 @@
-name: Build .NET Modules in Parallel
+name: Build, Zip, and Upload Release with Fine-Grained Token
 
 on:
   push:
     tags:
       - 'v8.*.*'
-  # pull_request:
-  #   branches:
-  #     - 'main'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        module: [Module1, Module2]  # Add all 58 module folder names here
 
     steps:
-      - name: Checkout repository
+      - name: Checkout source code
         uses: actions/checkout@v3
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'  # Adjust based on your SDK version
+          dotnet-version: '8.0.x'
 
-      - name: Restore dependencies
-        run: dotnet restore ${{ matrix.module }}/${{ matrix.module }}.csproj
+      - name: Publish project
+        run: dotnet publish ./Module1/Module1.csproj -c Release -o ./publish
 
-      - name: Build ${{ matrix.module }}
-        run: dotnet build ${{ matrix.module }}/${{ matrix.module }}.csproj --configuration Release --no-restore
+      - name: Zip published output
+        run: |
+          cd publish
+          zip -r ../Module1-${{ github.ref_name }}.zip .
+          cd ..
+
+      - name: Create GitHub Release and Upload ZIP
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Release ${{ github.ref_name }}"
+          files: Module1-${{ github.ref_name }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_FINE_PAT }}
