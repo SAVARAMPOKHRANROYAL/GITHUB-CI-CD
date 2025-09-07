@@ -1,0 +1,31 @@
+name: Build .NET Modules in Parallel
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: [Module1, Module2]  # Add all 58 module folder names here
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'  # Adjust based on your SDK version
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ matrix.module }}/${{ matrix.module }}.csproj
+
+      - name: Build ${{ matrix.module }}
+        run: dotnet build ${{ matrix.module }}/${{ matrix.module }}.csproj --configuration Release --no-restore
