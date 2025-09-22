@@ -1,5 +1,4 @@
 name: Build, Zip, and Upload Release with Fine-Grained Token
-
 on:
   push:
     tags:
