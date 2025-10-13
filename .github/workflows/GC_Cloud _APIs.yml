@@ -1,0 +1,116 @@
+name: Release on Tag
+
+on:
+  push:
+    tags:
+      - 'v8.17.*.*_*'
+
+env:
+  DOTNET_VERSION: ${{ secrets.FrameworkForDotNetCoreAPIS }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - name: AccountAPI
+            path: AHS.GC.Cloud/src/Services/Account/AHS.GC.Cloud.Account.API/AHS.GC.Cloud.Account.API.csproj
+          - name: ActivityAPI
+            path: AHS.GC.Cloud/src/Services/Activity/AHS.GC.Cloud.Activity.API/AHS.GC.Cloud.Activity.API.csproj
+          - name: AlertAPI
+            path: AHS.GC.Cloud/src/Services/Alert/AHS.GC.Cloud.Alert.API/AHS.GC.Cloud.Alert.API.csproj
+          - name: AppealGrievanceAPI
+            path: AHS.GC.Cloud/src/Services/AppealGrievance/AHS.GC.Cloud.AppealGrievance.API/AHS.GC.Cloud.AppealGrievance.API.csproj
+          - name: AppointmentAPI
+            path: AHS.GC.Cloud/src/Services/Appointment/AHS.GC.Cloud.Appointment.API/AHS.GC.Cloud.Appointment.API.csproj
+          - name: AssessmentAPI
+            path: AHS.GC.Cloud/src/Services/Assessment/AHS.GC.Cloud.Assessment.API/AHS.GC.Cloud.Assessment.API.csproj
+          - name: AuditAPI
+            path: AHS.GC.Cloud/src/Services/Audit/AHS.GC.Cloud.Audit.API/AHS.GC.Cloud.Audit.API.csproj
+          - name: AuthorizationAPI
+            path: AHS.GC.Cloud/src/Services/Authorization/AHS.GC.Cloud.Authorization.API/AHS.GC.Cloud.Authorization.API.csproj
+          - name: CalendarAPI
+            path: AHS.GC.Cloud/src/Services/Calendar/AHS.GC.Cloud.Calendar.API/AHS.GC.Cloud.Calendar.API.csproj
+          - name: CarePlanAPI
+            path: AHS.GC.Cloud/src/Services/CarePlan/AHS.GC.Cloud.CarePlan.API/AHS.GC.Cloud.CarePlan.API.csproj
+          - name: CareTeamAPI
+            path: AHS.GC.Cloud/src/Services/CareTeam/AHS.GC.Cloud.CareTeam.API/AHS.GC.Cloud.CareTeam.API.csproj
+          - name: ConsentFormAPI
+            path: AHS.GC.Cloud/src/Services/ConsentForm/AHS.GC.Cloud.ConsentForm.API/AHS.GC.Cloud.ConsentForm.API.csproj
+          - name: DashboardAPI
+            path: AHS.GC.Cloud/src/Services/Dashboard/AHS.GC.Cloud.Dashboard.API/AHS.GC.Cloud.Dashboard.API.csproj
+          - name: DocumentIOAPI
+            path: AHS.GC.Cloud/src/Services/Document.IO/AHS.GC.Cloud.Document.IO.API/AHS.GC.Cloud.Document.IO.API.csproj
+          - name: DocumentAPI
+            path: AHS.GC.Cloud/src/Services/Document/AHS.GC.Cloud.Document.API/AHS.GC.Cloud.Document.API.csproj
+          - name: EligibilityAPI
+            path: AHS.GC.Cloud/src/Services/Eligibility/AHS.GC.Cloud.Eligibility.API/AHS.GC.Cloud.Eligibility.API.csproj
+          - name: EncounterAPI
+            path: AHS.GC.Cloud/src/Services/Encounter/AHS.GC.Cloud.Encounter.API/AHS.GC.Cloud.Encounter.API.csproj
+          - name: EPSDTAPI
+            path: AHS.GC.Cloud/src/Services/EPSDT/AHS.GC.Cloud.EPSDT.API/AHS.GC.Cloud.EPSDT.API.csproj
+          - name: FHIRResourceAPI
+            path: AHS.GC.Cloud/src/Services/FHIRResource/AHS.GC.Cloud.FHIRResource.API/AHS.GC.Cloud.FHIRResource.API.csproj
+          - name: LetterAPI
+            path: AHS.GC.Cloud/src/Services/Letter/AHS.GC.Cloud.Letter.API/AHS.GC.Cloud.Letter.API.csproj
+          - name: MasterAPI
+            path: AHS.GC.Cloud/src/Services/Master/AHS.GC.Cloud.Master.API/AHS.GC.Cloud.Master.API.csproj
+          - name: MedicationAPI
+            path: AHS.GC.Cloud/src/Services/Medication/AHS.GC.Cloud.Medication.API/AHS.GC.Cloud.Medication.API.csproj
+          - name: MemberAPI
+            path: AHS.GC.Cloud/src/Services/Member/AHS.GC.Cloud.Member.API/AHS.GC.Cloud.Member.API.csproj
+          - name: PayorAPI
+            path: AHS.GC.Cloud/src/Services/Payor/AHS.GC.Cloud.Payor.API/AHS.GC.Cloud.Payor.API.csproj
+          - name: ProfileAPI
+            path: AHS.GC.Cloud/src/Services/Profile/AHS.GC.Cloud.Profile.API/AHS.GC.Cloud.Profile.API.csproj
+          - name: ProgramAPI
+            path: AHS.GC.Cloud/src/Services/Program/AHS.GC.Cloud.Program.API/AHS.GC.Cloud.Program.API.csproj
+          - name: ProviderAPI
+            path: AHS.GC.Cloud/src/Services/Provider/AHS.GC.Cloud.Provider.API/AHS.GC.Cloud.Provider.API.csproj
+          - name: RiskAPI
+            path: AHS.GC.Cloud/src/Services/Risk/AHS.GC.Cloud.Risk.API/AHS.GC.Cloud.Risk.API.csproj
+          - name: SDOHAPI
+            path: AHS.GC.Cloud/src/Services/SDOH/AHS.GC.Cloud.SDOH.API/AHS.GC.Cloud.SDOH.API.csproj
+          - name: SDOHWebhookAPI
+            path: AHS.GC.Cloud/src/Services/SDOH/AHS.GC.Cloud.SDOHWebhook.API/AHS.GC.Cloud.SDOHWebhook.API.csproj
+          - name: ServicePlanAPI
+            path: AHS.GC.Cloud/src/Services/ServicePlan/AHS.GC.Cloud.ServicePlan.API/AHS.GC.Cloud.ServicePlan.API.csproj
+          - name: TelehealthIOAPI
+            path: AHS.GC.Cloud/src/Services/Telehealth.IO/AHS.GC.Cloud.Telehealth.IO.API/AHS.GC.Cloud.Telehealth.IO.API.csproj
+          - name: AdminAPI
+            path: AHS.GC.Cloud/src/Services/Admin/AHS.GC.Cloud.Admin.API/AHS.GC.Cloud.Admin.API.csproj
+          - name: MemberInterLinkAPI
+            path: AHS.GC.Cloud/src/Services/MemberInterLink/AHS.GC.Cloud.MemberInterLink.API/AHS.GC.Cloud.MemberInterLink.API.csproj
+            
+    steps:
+      - name: Checkout external repository
+        uses: actions/checkout@v3
+        with:
+          repository: HE-Core/GC
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: external-repo
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Build and Zip ${{ matrix.project.name }}
+        run: |
+          dotnet publish external-repo/${{ matrix.project.path }} \
+            --configuration Release \
+            --output ./published-${{ matrix.project.name }}
+          zip -r ${{ matrix.project.name }}.zip ./published-${{ matrix.project.name }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.project.name }}
+          path: ${{ matrix.project.name }}.zip
+
+  release:
+    needs: build
+    uses: ./.github/workflows/release-shared-API.yml
+    with:
+      artifact_path: ./artifacts/**/*.zip
